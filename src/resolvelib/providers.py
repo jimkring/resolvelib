@@ -1,7 +1,13 @@
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
-from typing import TYPE_CHECKING, Generic, Iterable, Iterator
+from typing import (
+    TYPE_CHECKING,
+    Generic,
+    Iterable,
+    Iterator,
+    Mapping,
+    Sequence,
+)
 
 from .structs import CT, KT, RT, Matches, RequirementInformation
 

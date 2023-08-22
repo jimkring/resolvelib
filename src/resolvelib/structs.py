@@ -3,14 +3,17 @@ from __future__ import annotations
 import itertools
 from abc import ABCMeta
 from collections import namedtuple
-from collections.abc import Collection, Container, Mapping, Sequence
 from typing import (
     TYPE_CHECKING,
     Callable,
+    Collection,
+    Container,
     Generic,
     Iterable,
     Iterator,
+    Mapping,
     NamedTuple,
+    Sequence,
     TypeVar,
     Union,
 )

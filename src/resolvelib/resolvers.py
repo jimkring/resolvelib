@@ -3,8 +3,15 @@ from __future__ import annotations
 import collections
 import itertools
 import operator
-from collections.abc import Collection, Mapping
-from typing import TYPE_CHECKING, Any, Generic, Iterable, NamedTuple
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Collection,
+    Generic,
+    Iterable,
+    Mapping,
+    NamedTuple,
+)
 
 from .providers import AbstractProvider
 from .reporters import BaseReporter

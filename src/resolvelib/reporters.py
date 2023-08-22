@@ -1,7 +1,14 @@
-from collections.abc import Collection
 from typing import Generic
 
-from .structs import CT, KT, RT, Criterion, RequirementInformation, State
+from .structs import (
+    CT,
+    KT,
+    RT,
+    Collection,
+    Criterion,
+    RequirementInformation,
+    State,
+)
 
 
 class BaseReporter(Generic[KT, RT, CT]):
