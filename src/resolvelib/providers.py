@@ -1,7 +1,18 @@
-class AbstractProvider(object):
+from __future__ import annotations
+
+from collections.abc import Mapping, Sequence
+from typing import TYPE_CHECKING, Generic, Iterable, Iterator
+
+from .structs import CT, KT, RT, Matches, RequirementInformation
+
+if TYPE_CHECKING:
+    from _typeshed import SupportsRichComparison
+
+
+class AbstractProvider(Generic[KT, RT, CT]):
     """Delegate class to provide the required interface for the resolver."""
 
-    def identify(self, requirement_or_candidate):
+    def identify(self, requirement_or_candidate: RT | CT) -> KT:
         """Given a requirement, return an identifier for it.
 
         This is used to identify a requirement, e.g. whether two requirements
@@ -11,12 +22,12 @@ class AbstractProvider(object):
 
     def get_preference(
         self,
-        identifier,
-        resolutions,
-        candidates,
-        information,
-        backtrack_causes,
-    ):
+        identifier: KT,
+        resolutions: Mapping[KT, CT],
+        candidates: Mapping[KT, Iterator[CT]],
+        information: Mapping[KT, Iterator[RequirementInformation[RT, CT]]],
+        backtrack_causes: Sequence[RequirementInformation[RT, CT]],
+    ) -> SupportsRichComparison:
         """Produce a sort key for given requirement based on preference.
 
         The preference is defined as "I think this requirement should be
@@ -60,7 +71,12 @@ class AbstractProvider(object):
         """
         raise NotImplementedError
 
-    def find_matches(self, identifier, requirements, incompatibilities):
+    def find_matches(
+        self,
+        identifier: KT,
+        requirements: Mapping[KT, Iterator[RT]],
+        incompatibilities: Mapping[KT, Iterator[CT]],
+    ) -> Matches:
         """Find all possible candidates that satisfy the given constraints.
 
         :param identifier: An identifier as returned by ``identify()``. This
@@ -89,7 +105,7 @@ class AbstractProvider(object):
         """
         raise NotImplementedError
 
-    def is_satisfied_by(self, requirement, candidate):
+    def is_satisfied_by(self, requirement: RT, candidate: CT) -> bool:
         """Whether the given requirement can be satisfied by a candidate.
 
         The candidate is guaranteed to have been generated from the
@@ -100,34 +116,10 @@ class AbstractProvider(object):
         """
         raise NotImplementedError
 
-    def get_dependencies(self, candidate):
+    def get_dependencies(self, candidate: CT) -> Iterable[RT]:
         """Get dependencies of a candidate.
 
         This should return a collection of requirements that `candidate`
         specifies as its dependencies.
-        """
-        raise NotImplementedError
-
-
-class AbstractResolver(object):
-    """The thing that performs the actual resolution work."""
-
-    base_exception = Exception
-
-    def __init__(self, provider, reporter):
-        self.provider = provider
-        self.reporter = reporter
-
-    def resolve(self, requirements, **kwargs):
-        """Take a collection of constraints, spit out the resolution result.
-
-        This returns a representation of the final resolution state, with one
-        guarenteed attribute ``mapping`` that contains resolved candidates as
-        values. The keys are their respective identifiers.
-
-        :param requirements: A collection of constraints.
-        :param kwargs: Additional keyword arguments that subclasses may accept.
-
-        :raises: ``self.base_exception`` or its subclass.
         """
         raise NotImplementedError
