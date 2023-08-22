@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 import pytest
 from packaging.requirements import Requirement
 from packaging.version import Version
+
 from resolvelib import (
     AbstractProvider,
     BaseReporter,

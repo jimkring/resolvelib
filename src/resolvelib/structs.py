@@ -10,6 +10,7 @@ from typing import (
     Generic,
     Iterable,
     Iterator,
+    NamedTuple,
     TypeVar,
     Union,
 )
@@ -22,11 +23,11 @@ Matches = Union[Iterable[CT], Callable[[], Iterable[CT]]]
 
 if TYPE_CHECKING:
 
-    class RequirementInformation(tuple, Generic[RT, CT]):
+    class RequirementInformation(NamedTuple, Generic[RT, CT]):
         requirement: RT
         parent: CT | None
 
-    class State(tuple, Generic[KT, RT, CT]):
+    class State(NamedTuple, Generic[KT, RT, CT]):
         """Resolution state in a round."""
 
         mapping: dict[KT, CT]

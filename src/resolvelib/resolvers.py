@@ -4,7 +4,7 @@ import collections
 import itertools
 import operator
 from collections.abc import Collection, Mapping
-from typing import TYPE_CHECKING, Any, Generic, Iterable
+from typing import TYPE_CHECKING, Any, Generic, Iterable, NamedTuple
 
 from .providers import AbstractProvider
 from .reporters import BaseReporter
@@ -24,7 +24,7 @@ from .structs import (
 if TYPE_CHECKING:
     from _typeshed import SupportsRichComparison
 
-    class Result(tuple, Generic[KT, RT, CT]):
+    class Result(NamedTuple, Generic[KT, RT, CT]):
         mapping: Mapping[KT, CT]
         graph: DirectedGraph[KT | None]
         criteria: Mapping[KT, Criterion[RT, CT]]
