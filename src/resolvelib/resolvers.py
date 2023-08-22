@@ -4,7 +4,7 @@ import collections
 import itertools
 import operator
 from collections.abc import Collection, Mapping
-from typing import TYPE_CHECKING, Any, Generic, Iterable, NamedTuple
+from typing import TYPE_CHECKING, Any, Generic, Iterable
 
 from .providers import AbstractProvider
 from .reporters import BaseReporter
@@ -23,6 +23,14 @@ from .structs import (
 
 if TYPE_CHECKING:
     from _typeshed import SupportsRichComparison
+
+    class Result(tuple, Generic[KT, RT, CT]):
+        mapping: Mapping[KT, CT]
+        graph: DirectedGraph[KT | None]
+        criteria: Mapping[KT, Criterion[RT, CT]]
+
+else:
+    Result = collections.namedtuple("Result", ["mapping", "graph", "criteria"])
 
 
 class ResolverException(Exception):
@@ -470,12 +478,6 @@ def _has_route_to_root(
             connected.add(key)
             return True
     return False
-
-
-class Result(NamedTuple, Generic[KT, RT, CT]):
-    mapping: Mapping[KT, CT]
-    graph: DirectedGraph[KT | None]
-    criteria: Mapping[KT, Criterion[RT, CT]]
 
 
 def _build_result(state: State[KT, RT, CT]) -> Result[KT, RT, CT]:

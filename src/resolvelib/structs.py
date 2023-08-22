@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import itertools
 from abc import ABCMeta
+from collections import namedtuple
 from collections.abc import Collection, Container, Mapping, Sequence
 from typing import (
+    TYPE_CHECKING,
     Callable,
     Generic,
     Iterable,
     Iterator,
-    NamedTuple,
     TypeVar,
     Union,
 )
@@ -18,6 +19,25 @@ RT = TypeVar("RT")  # Requirement.
 CT = TypeVar("CT")  # Candidate.
 
 Matches = Union[Iterable[CT], Callable[[], Iterable[CT]]]
+
+if TYPE_CHECKING:
+
+    class RequirementInformation(tuple, Generic[RT, CT]):
+        requirement: RT
+        parent: CT | None
+
+    class State(tuple, Generic[KT, RT, CT]):
+        """Resolution state in a round."""
+
+        mapping: dict[KT, CT]
+        criteria: dict[KT, Criterion[RT, CT]]
+        backtrack_causes: list[RequirementInformation[RT, CT]]
+
+else:
+    RequirementInformation = namedtuple(
+        "RequirementInformation", ["requirement", "parent"]
+    )
+    State = namedtuple("State", ["mapping", "criteria", "backtrack_causes"])
 
 
 class DirectedGraph(Generic[KT]):
@@ -192,11 +212,6 @@ def build_iter_view(
     return _SequenceIterableView(matches)  # type: ignore[return-value]
 
 
-class RequirementInformation(NamedTuple, Generic[RT, CT]):
-    requirement: RT
-    parent: CT | None
-
-
 class Criterion(Generic[RT, CT]):
     """Representation of possible resolution results of a package.
 
@@ -238,11 +253,3 @@ class Criterion(Generic[RT, CT]):
 
     def iter_parent(self) -> Iterator[CT | None]:
         return (i.parent for i in self.information)
-
-
-class State(NamedTuple, Generic[KT, RT, CT]):
-    """Resolution state in a round."""
-
-    mapping: dict[KT, CT]
-    criteria: dict[KT, Criterion[RT, CT]]
-    backtrack_causes: list[RequirementInformation[RT, CT]]
