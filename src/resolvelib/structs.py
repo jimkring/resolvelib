@@ -30,7 +30,7 @@ if TYPE_CHECKING:
         requirement: RT
         parent: CT | None
 
-    class State(NamedTuple, Generic[KT, RT, CT]):
+    class State(NamedTuple, Generic[RT, CT, KT]):
         """Resolution state in a round."""
 
         mapping: dict[KT, CT]
@@ -110,7 +110,7 @@ class DirectedGraph(Generic[KT]):
         return iter(self._backwards[key])
 
 
-class IteratorMapping(Mapping[KT, Iterator[CT]], Generic[KT, RT, CT]):
+class IteratorMapping(Mapping[KT, Iterator[CT]], Generic[RT, CT, KT]):
     def __init__(
         self,
         mapping: Mapping[KT, RT],

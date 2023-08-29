@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from _typeshed import SupportsRichComparison
 
 
-class AbstractProvider(Generic[KT, RT, CT]):
+class AbstractProvider(Generic[RT, CT, KT]):
     """Delegate class to provide the required interface for the resolver."""
 
     def identify(self, requirement_or_candidate: RT | CT) -> KT:

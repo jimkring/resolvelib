@@ -31,7 +31,7 @@ from .structs import (
 if TYPE_CHECKING:
     from _typeshed import SupportsRichComparison
 
-    class Result(NamedTuple, Generic[KT, RT, CT]):
+    class Result(NamedTuple, Generic[RT, CT, KT]):
         mapping: Mapping[KT, CT]
         graph: DirectedGraph[KT | None]
         criteria: Mapping[KT, Criterion[RT, CT]]
@@ -89,7 +89,7 @@ class ResolutionTooDeep(ResolutionError):
         self.round_count = round_count
 
 
-class Resolution(Generic[KT, RT, CT]):
+class Resolution(Generic[RT, CT, KT]):
     """Stateful resolution object.
 
     This is designed as a one-off object that holds information to kick start
@@ -98,15 +98,15 @@ class Resolution(Generic[KT, RT, CT]):
 
     def __init__(
         self,
-        provider: AbstractProvider[KT, RT, CT],
-        reporter: BaseReporter[KT, RT, CT],
+        provider: AbstractProvider[RT, CT, KT],
+        reporter: BaseReporter[RT, CT, KT],
     ) -> None:
         self._p = provider
         self._r = reporter
-        self._states: list[State[KT, RT, CT]] = []
+        self._states: list[State[RT, CT, KT]] = []
 
     @property
-    def state(self) -> State[KT, RT, CT]:
+    def state(self) -> State[RT, CT, KT]:
         try:
             return self._states[-1]
         except IndexError:
@@ -383,7 +383,7 @@ class Resolution(Generic[KT, RT, CT]):
 
     def resolve(
         self, requirements: Iterable[RT], max_rounds: int
-    ) -> State[KT, RT, CT]:
+    ) -> State[RT, CT, KT]:
         if self._states:
             raise RuntimeError("already resolved")
 
@@ -487,7 +487,7 @@ def _has_route_to_root(
     return False
 
 
-def _build_result(state: State[KT, RT, CT]) -> Result[KT, RT, CT]:
+def _build_result(state: State[RT, CT, KT]) -> Result[RT, CT, KT]:
     mapping = state.mapping
     all_keys: dict[int, KT | None] = {id(v): k for k, v in mapping.items()}
     all_keys[id(None)] = None
@@ -517,22 +517,22 @@ def _build_result(state: State[KT, RT, CT]) -> Result[KT, RT, CT]:
     )
 
 
-class AbstractResolver(Generic[KT, RT, CT]):
+class AbstractResolver(Generic[RT, CT, KT]):
     """The thing that performs the actual resolution work."""
 
     base_exception = Exception
 
     def __init__(
         self,
-        provider: AbstractProvider[KT, RT, CT],
-        reporter: BaseReporter[KT, RT, CT],
+        provider: AbstractProvider[RT, CT, KT],
+        reporter: BaseReporter[RT, CT, KT],
     ) -> None:
         self.provider = provider
         self.reporter = reporter
 
     def resolve(
         self, requirements: Iterable[RT], **kwargs: Any
-    ) -> Result[KT, RT, CT]:
+    ) -> Result[RT, CT, KT]:
         """Take a collection of constraints, spit out the resolution result.
 
         This returns a representation of the final resolution state, with one
@@ -547,7 +547,7 @@ class AbstractResolver(Generic[KT, RT, CT]):
         raise NotImplementedError
 
 
-class Resolver(AbstractResolver[KT, RT, CT]):
+class Resolver(AbstractResolver[RT, CT, KT]):
     """The thing that performs the actual resolution work."""
 
     base_exception = ResolverException
@@ -556,7 +556,7 @@ class Resolver(AbstractResolver[KT, RT, CT]):
         self,
         requirements: Iterable[RT],
         max_rounds: int = 100,
-    ) -> Result[KT, RT, CT]:
+    ) -> Result[RT, CT, KT]:
         """Take a collection of constraints, spit out the resolution result.
 
         The return value is a representation to the final resolution result. It

@@ -13,7 +13,7 @@ from .structs import (
 )
 
 
-class BaseReporter(Generic[KT, RT, CT]):
+class BaseReporter(Generic[RT, CT, KT]):
     """Delegate class to provider progress reporting for the resolver."""
 
     def starting(self) -> None:
@@ -25,14 +25,14 @@ class BaseReporter(Generic[KT, RT, CT]):
         The index is zero-based.
         """
 
-    def ending_round(self, index: int, state: State[KT, RT, CT]) -> None:
+    def ending_round(self, index: int, state: State[RT, CT, KT]) -> None:
         """Called before each round of resolution ends.
 
         This is NOT called if the resolution ends at this round. Use `ending`
         if you want to report finalization. The index is zero-based.
         """
 
-    def ending(self, state: State[KT, RT, CT]) -> None:
+    def ending(self, state: State[RT, CT, KT]) -> None:
         """Called before the resolution ends successfully."""
 
     def adding_requirement(self, requirement: RT, parent: CT | None) -> None:
