@@ -12,7 +12,11 @@ from typing import (
 from .structs import CT, KT, RT, Matches, RequirementInformation
 
 if TYPE_CHECKING:
-    from _typeshed import SupportsRichComparison
+    from typing import Any, Protocol
+
+    class Preference(Protocol):
+        def __lt__(self, __other: Any) -> bool:
+            ...
 
 
 class AbstractProvider(Generic[RT, CT, KT]):
@@ -33,7 +37,7 @@ class AbstractProvider(Generic[RT, CT, KT]):
         candidates: Mapping[KT, Iterator[CT]],
         information: Mapping[KT, Iterator[RequirementInformation[RT, CT]]],
         backtrack_causes: Sequence[RequirementInformation[RT, CT]],
-    ) -> SupportsRichComparison:
+    ) -> Preference:
         """Produce a sort key for given requirement based on preference.
 
         The preference is defined as "I think this requirement should be

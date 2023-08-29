@@ -29,7 +29,7 @@ from .structs import (
 )
 
 if TYPE_CHECKING:
-    from _typeshed import SupportsRichComparison
+    from .providers import Preference
 
     class Result(NamedTuple, Generic[RT, CT, KT]):
         mapping: Mapping[KT, CT]
@@ -197,7 +197,7 @@ class Resolution(Generic[RT, CT, KT]):
                 criterion.incompatibilities,
             )
 
-    def _get_preference(self, name: KT) -> SupportsRichComparison:
+    def _get_preference(self, name: KT) -> Preference:
         return self._p.get_preference(
             identifier=name,
             resolutions=self.state.mapping,

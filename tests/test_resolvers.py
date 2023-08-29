@@ -203,7 +203,7 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
         ],
     }
 
-    class Provider(AbstractProvider[str, str, Candidate]):
+    class Provider(AbstractProvider[str, Candidate, str]):
         def identify(self, requirement_or_candidate: str | Candidate) -> str:
             result = (
                 Requirement(requirement_or_candidate).name
@@ -260,7 +260,7 @@ def test_pin_conflict_with_self(monkeypatch, reporter):
         Resolution, "_get_updated_criteria", get_updated_criteria_patch
     )
 
-    resolver: Resolver[str, str, Candidate] = Resolver(Provider(), reporter)
+    resolver: Resolver[str, Candidate, str] = Resolver(Provider(), reporter)
     result = resolver.resolve(["child", "parent"])
 
     def get_child_versions(
